@@ -10,6 +10,21 @@
     "type": "STRING"
   },
   {
+    "mode": "NULLABLE",
+    "name": "document_namespace",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "document_type",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "document_version",
+    "type": "STRING"
+  },
+  {
     "fields": [
       {
         "fields": [
