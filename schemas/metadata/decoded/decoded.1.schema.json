@@ -9,6 +9,15 @@
       "description": "The document ID specified in the URI when the client sent this message",
       "type": "string"
     },
+    "document_namespace": {
+      "type": "string"
+    },
+    "document_type": {
+      "type": "string"
+    },
+    "document_version": {
+      "type": "string"
+    },
     "metadata": {
       "properties": {
         "geo": {

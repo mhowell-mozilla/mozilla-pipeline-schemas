@@ -7,6 +7,15 @@
     "client_id": {
       "type": "string"
     },
+    "document_namespace": {
+      "type": "string"
+    },
+    "document_type": {
+      "type": "string"
+    },
+    "document_version": {
+      "type": "string"
+    },
     "payload": {
       "format": "bytes",
       "type": "string"
