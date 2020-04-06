@@ -4,8 +4,10 @@ This repository contains schemas for Mozilla's data ingestion pipeline and data
 lake outputs.
 
 The JSON schemas are used to validate incoming submissions at ingestion time.
-The [RapidJSON](http://rapidjson.org/md_doc_schema.html) library (using draft 4)
-is used for JSON Schema Validation in this repository's tests.
+The [`jsonschema` [Python]](https://python-jsonschema.readthedocs.io/en/stable/)
+and [`everit-org/json-schema` [Java]](https://github.com/everit-org/json-schema)
+library (using draft 4) are used for JSON Schema Validation in this repository's
+tests.
 This has implications for what kinds of string patterns are supported,
 see the `Conformance` section in the linked document for further details.
 Note that as of 2019, the data pipeline uses the
@@ -23,7 +25,7 @@ is a great resource.
 - Build the rendered schemas using the instructions below, and check those artifacts (in the `schemas` directory) in to the git repo as well. See the rationale for this in the "Notes" section below.
 - Add one or more example JSON documents to the `validation` directory.
 - Run the tests (either via Docker or directly) using the instructions below.
-- Once all tests pass, submit a PR to the github repository against the `master` branch. Please include a reference to a bug number in your PR/commit, for reference.
+- Once all tests pass, submit a PR to the github repository against the `master` branch. See also the notes on [contributions](#contributions).
 
 Note that Pioneer studies have a [slightly amended](README.pioneer.md) process.
 
@@ -33,14 +35,15 @@ Note that Pioneer studies have a [slightly amended](README.pioneer.md) process.
 
 * [`CMake` (3.0+)](http://cmake.org/cmake/resources/software.html)
 * [`jq` (1.5+)](https://github.com/stedolan/jq)
-* [`parquetfmt` (0.1+)](https://github.com/trink/parquetfmt), available via [cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html): `cargo install --git https://github.com/trink/parquetfmt`
+* `python` (3.6+)
+* Optional: `java 8`, `maven`
 * Optional: [Docker](https://www.docker.com/get-started)
 
 On MacOS, these prerequisites can be installed using [homebrew](https://brew.sh/):
 ```
 brew install cmake
 brew install jq
-brew install rust && cargo install --git https://github.com/trink/parquetfmt
+brew install python
 brew cask install docker
 ```
 
@@ -70,27 +73,26 @@ To run the tests:
 
 ### Packaging and integration tests (optional)
 
-Follow the CMake Build Instructions above, then:
+Follow the CMake Build Instructions above to update the `schemas` directory.
+To run the unit-tests, run the following commands:
 
-    cpack -G TGZ # (DEB|RPM|ZIP)
+```bash
+# optional: activate a virtual environment with python3.6+
+python3 -m venv venv
+source venv/bin/activate
 
-    # Integration Tests (run on schema-test EC2 instance)
-      # If running locally
-        # The following RPM's must be installed:
-          # luasandbox, hindsight, luasandbox-lfs, luasandbox-lpeg, luasandbox-rjson, luasandbox-cjson, luasandbox-parquet
-        # The following external libraries must be installed
-          # parquet-cpp
-    make # this sets up the tests in the release directory
-    ctest -V -C hindsight # loads all the schemas and tests the inputs in the validation directory against them
+# install python dependencies, if they haven't already
+pip install -r requirements.txt
 
-The following docker command will generate a report against a sample of data from the ingestion system given proper credentials. Running this is recommended when making modifications to many schemas or during review.
+# run the tests, with 8 parallel processes
+pytest -n 8
 
-    docker run \
-        -e AWS_ACCESS_KEY_ID \
-        -e AWS_SECRET_ACCESS_KEY \
-        -v "$(pwd)":/app/mozilla-pipeline-schemas \
-        -it mozilla/edge-validator:latest \
-            make report
+# run tests for a specific namespace and doctype
+pytest -k telemetry/main.4
+
+# run java tests only (if Java is configured)
+pytest -k java
+```
 
 Pushes to the main repo will trigger integration tests in CircleCI that directly
 compare the revision to the `master` branch. These tests do not run for forked PRs
@@ -116,7 +118,7 @@ deployed to production BigQuery tables several times a week.
 
 ## Contributions
 
-* All non trivial contributions should start with an issue being filed (if it is
+* All non trivial contributions should start with a bug or issue being filed (if it is
   a new feature please propose your design/approach before doing any work as not
   all feature requests are accepted).
 * If updating the glean schemas, be sure to update the changelog in
@@ -125,6 +127,7 @@ deployed to production BigQuery tables several times a week.
   do not receive a response within a few business days (or your request is
   urgent), please followup in the
   [#fx-metrics slack channel](https://mozilla.slack.com/messages/fx-metrics/).
+* If your PR is associated with a bugzilla bug, please title it `Bug XXX - Description of change`, that way the [Bugzilla PR Linker](https://github.com/mozilla/github-bugzilla-pr-linker) will automatically add an attachment with your PR to bugzilla, for future reference.
 
 ### Notes
 

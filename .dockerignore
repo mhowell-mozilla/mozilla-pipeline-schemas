@@ -1,2 +1,9 @@
 release/
-data/
+venv/
+/build/
+/data/
+/target/
+**/__pycache__/
+**/*.pyc
+.classpath
+.project

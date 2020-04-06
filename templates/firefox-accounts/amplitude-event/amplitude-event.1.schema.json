@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "amplitude-event",
+  "properties": {
+    "op": {
+      "description": "Pre-existing Firefox Accounts metrics field used to identify Amplitude metrics events.",
+      "type": "string",
+      "enum": [ "amplitudeEvent" ]
+    }
+  },
+  "required": [
+    "op"
+  ]
+}

@@ -4,6 +4,10 @@
     "addon_version": {
       "type": "string"
     },
+    "browser_session_id": {
+      "description": "A mirror of the browser sessionId, as defined in https://github.com/mozilla-services/mozilla-pipeline-schemas/blob/master/schemas/telemetry/main/main.4.schema.json",
+      "type": "string"
+    },
     "client_id": {
       "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
       "type": "string"
@@ -15,6 +19,18 @@
     "event_context": {
       "description": "A string that describes the context about this event",
       "type": "string"
+    },
+    "experiments": {
+      "additionalProperties": {
+        "properties": {
+          "branch": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "description": "An object to record all active experiments, experiments IDs are stored as keys, and the value object stores the branch information. Example: {\"experiment_1\": {\"branch\": \"control\"}, \"experiment_2\": {\"branch\": \"treatment\"}}. This deprecates the \"shield_id\" used in activity-stream and messaging-system.",
+      "type": "object"
     },
     "locale": {
       "type": "string"
@@ -29,7 +45,7 @@
       "type": "string"
     },
     "shield_id": {
-      "description": "A semicolon separated string to store a list of Shield study IDs",
+      "description": "[DEPRECATED]: use `experiments` instead. A semicolon separated string to store a list of Shield study IDs",
       "type": "string"
     },
     "version": {
